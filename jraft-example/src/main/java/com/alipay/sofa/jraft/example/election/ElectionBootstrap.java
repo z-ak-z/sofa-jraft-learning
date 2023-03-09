@@ -18,6 +18,9 @@ package com.alipay.sofa.jraft.example.election;
 
 import com.alipay.sofa.jraft.entity.PeerId;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * @author jiachun.fjc
@@ -53,8 +56,20 @@ public class ElectionBootstrap {
                 PeerId serverId = node.getNode().getLeaderId();
                 String ip = serverId.getIp();
                 int port = serverId.getPort();
+                List<PeerId> alivePeers = node.getNode().listAlivePeers();
                 System.out.println("[ElectionBootstrap] Leader's ip is: " + ip + ", port: " + port);
                 System.out.println("[ElectionBootstrap] Leader start on term: " + leaderTerm);
+                System.out.println("[ElectionBootstrap] listAlivePeers: " + alivePeers);
+                System.out.println("[ElectionBootstrap] listLearners: " + node.getNode().listLearners());
+                System.out.println("[ElectionBootstrap] listAliveLearners: " + node.getNode().listAliveLearners());
+                List<PeerId> followerPeers = new ArrayList<>();
+
+                for (PeerId AlivePeer : alivePeers) {
+                    if (!AlivePeer.equals(serverId)) {
+                        followerPeers.add(AlivePeer);
+                    }
+                }
+                System.out.println("[ElectionBootstrap] followerPeers: " + followerPeers);
             }
 
             @Override
