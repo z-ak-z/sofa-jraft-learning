@@ -19,6 +19,7 @@ package com.alipay.sofa.jraft.example.election;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
+import com.alipay.sofa.jraft.entity.LeaderChangeContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,9 +37,11 @@ public class ElectionOnlyStateMachine extends StateMachineAdapter {
 
     private final AtomicLong                leaderTerm = new AtomicLong(-1L);
     private final List<LeaderStateListener> listeners;
+    private final List<FollowerStateListener> followerListeners;
 
-    public ElectionOnlyStateMachine(List<LeaderStateListener> listeners) {
+    public ElectionOnlyStateMachine(List<LeaderStateListener> listeners, List<FollowerStateListener> followerListeners) {
         this.listeners = listeners;
+        this.followerListeners = followerListeners;
     }
 
     @Override
@@ -66,6 +69,22 @@ public class ElectionOnlyStateMachine extends StateMachineAdapter {
         this.leaderTerm.set(-1L);
         for (final LeaderStateListener listener : this.listeners) { // iterator the snapshot
             listener.onLeaderStop(oldTerm);
+        }
+    }
+
+    @Override
+    public void onStopFollowing(final LeaderChangeContext ctx) {
+        super.onStopFollowing(ctx);
+        for (final FollowerStateListener listener : this.followerListeners) { // iterator the snapshot
+            listener.onStopFollowing(ctx);
+        }
+    }
+
+    @Override
+    public void onStartFollowing(final LeaderChangeContext ctx) {
+        super.onStopFollowing(ctx);
+        for (final FollowerStateListener listener : this.followerListeners) { // iterator the snapshot
+            listener.onStartFollowing(ctx);
         }
     }
 
