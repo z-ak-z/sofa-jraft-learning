@@ -41,6 +41,9 @@ public class CounterGrpcHelper {
                 CounterOutter.IncrementAndGetRequest.getDefaultInstance());
             RpcFactoryHelper.rpcFactory().registerProtobufSerializer(CounterOutter.ValueResponse.class.getName(),
                 CounterOutter.ValueResponse.getDefaultInstance());
+            RpcFactoryHelper.rpcFactory().registerProtobufSerializer(
+                CounterOutter.DecrementAndGetRequest.class.getName(),
+                CounterOutter.DecrementAndGetRequest.getDefaultInstance());
 
             try {
                 Class<?> clazz = Class.forName("com.alipay.sofa.jraft.rpc.impl.MarshallerHelper");
@@ -48,6 +51,8 @@ public class CounterGrpcHelper {
                 registerRespInstance.invoke(null, CounterOutter.GetValueRequest.class.getName(),
                     CounterOutter.ValueResponse.getDefaultInstance());
                 registerRespInstance.invoke(null, CounterOutter.IncrementAndGetRequest.class.getName(),
+                    CounterOutter.ValueResponse.getDefaultInstance());
+                registerRespInstance.invoke(null, CounterOutter.DecrementAndGetRequest.class.getName(),
                     CounterOutter.ValueResponse.getDefaultInstance());
             } catch (Exception e) {
                 LOG.error("Failed to init grpc server", e);

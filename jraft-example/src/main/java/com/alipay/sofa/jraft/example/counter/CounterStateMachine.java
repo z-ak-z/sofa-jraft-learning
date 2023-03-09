@@ -16,8 +16,6 @@
  */
 package com.alipay.sofa.jraft.example.counter;
 
-import static com.alipay.sofa.jraft.example.counter.CounterOperation.GET;
-import static com.alipay.sofa.jraft.example.counter.CounterOperation.INCREMENT;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -40,6 +38,8 @@ import com.alipay.sofa.jraft.error.RaftException;
 import com.alipay.sofa.jraft.example.counter.snapshot.CounterSnapshotFile;
 import com.alipay.sofa.jraft.storage.snapshot.SnapshotReader;
 import com.alipay.sofa.jraft.storage.snapshot.SnapshotWriter;
+
+import static com.alipay.sofa.jraft.example.counter.CounterOperation.*;
 
 /**
  * Counter state machine.
@@ -109,6 +109,7 @@ public class CounterStateMachine extends StateMachineAdapter {
             }
             if (counterOperation != null) {
                 switch (counterOperation.getOp()) {
+
                     case GET:
                         current = this.value.get();
                         LOG.info("Get value={} at logIndex={}", current, iter.getIndex());
@@ -118,6 +119,12 @@ public class CounterStateMachine extends StateMachineAdapter {
                         final long prev = this.value.get();
                         current = this.value.addAndGet(delta);
                         LOG.info("Added value={} by delta={} at logIndex={}", prev, delta, iter.getIndex());
+                        break;
+                    case DECREMENT:
+                        final long deltaD = counterOperation.getDelta();
+                        final long prevD = this.value.get();
+                        current = this.value.addAndGet(-deltaD);
+                        LOG.info("Added value={} by delta={} at logIndex={}", prevD, deltaD, iter.getIndex());
                         break;
                 }
 

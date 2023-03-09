@@ -21,4 +21,6 @@ message ValueResponse {
   optional string errorMsg = 4;
 }
 
-
+message DecrementAndGetRequest {
+  required int64 delta = 1;
+}

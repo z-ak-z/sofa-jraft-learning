@@ -21,6 +21,7 @@ import com.alipay.sofa.jraft.conf.Configuration;
 import com.alipay.sofa.jraft.entity.PeerId;
 import com.alipay.sofa.jraft.error.RemotingException;
 import com.alipay.sofa.jraft.example.counter.rpc.CounterOutter.IncrementAndGetRequest;
+import com.alipay.sofa.jraft.example.counter.rpc.CounterOutter.DecrementAndGetRequest;
 import com.alipay.sofa.jraft.example.counter.rpc.CounterGrpcHelper;
 import com.alipay.sofa.jraft.option.CliOptions;
 import com.alipay.sofa.jraft.rpc.InvokeCallback;
@@ -62,7 +63,12 @@ public class CounterClient {
         final CountDownLatch latch = new CountDownLatch(n);
         final long start = System.currentTimeMillis();
         for (int i = 0; i < n; i++) {
-            incrementAndGet(cliClientService, leader, i, latch);
+//            incrementAndGet(cliClientService, leader, i, latch);
+            if (i % 3 == 0) {
+                incrementAndGet(cliClientService, leader, i, latch);
+            } else {
+                decrementAndGet(cliClientService, leader, i, latch);
+            }
         }
         latch.await();
         System.out.println(n + " ops, cost : " + (System.currentTimeMillis() - start) + " ms.");
@@ -80,6 +86,30 @@ public class CounterClient {
                 if (err == null) {
                     latch.countDown();
                     System.out.println("incrementAndGet result:" + result);
+                } else {
+                    err.printStackTrace();
+                    latch.countDown();
+                }
+            }
+
+            @Override
+            public Executor executor() {
+                return null;
+            }
+        }, 5000);
+    }
+
+    private static void decrementAndGet(final CliClientServiceImpl cliClientService, final PeerId leader,
+                                        final long delta, CountDownLatch latch) throws RemotingException,
+            InterruptedException {
+        DecrementAndGetRequest request = DecrementAndGetRequest.newBuilder().setDelta(delta).build();
+        cliClientService.getRpcClient().invokeAsync(leader.getEndpoint(), request, new InvokeCallback() {
+
+            @Override
+            public void complete(Object result, Throwable err) {
+                if (err == null) {
+                    latch.countDown();
+                    System.out.println("decrementAndGet result:" + result);
                 } else {
                     err.printStackTrace();
                     latch.countDown();

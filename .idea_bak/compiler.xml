@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="jraft-rheakv-pd" />
+        <module name="jraft-example" />
+        <module name="rpc-grpc-impl" />
+        <module name="bdb-log-storage-impl" />
+        <module name="jraft-test" />
+        <module name="java-log-storage-impl" />
+        <module name="jraft-rheakv-core" />
+        <module name="jraft-core" />
+      </profile>
+    </annotationProcessing>
+  </component>
+</project>
